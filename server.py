@@ -8,7 +8,7 @@ import os
 import subprocess
 
 import led
-import mailer
+import camera
  
 # Standard socket stuff:
 host = ''  # do we need socket.gethostname() ?
@@ -52,23 +52,13 @@ while True:
 		Content-Type: text/html
 		<html><head><title>Success</title></head><body>Boo!</body></html>
 		""")
-		if key == "email":
-			e = mailer.Mailer(1)
-			e.test()
-		elif key == "camera":
+		if key == "camera":
 			if value == "1":
-				try:
-					os.remove("/var/www/one.jpg")
-				except OSError:
-					pass
-				try:
-					cmd = 'raspistill -o /var/www/one.jpg -q 50 -w 640 -h 480'
-					pid = subprocess.call(cmd, shell=True)
-				except KeyboardInterrupt:
-					print "\nGoodbye!"
+				c = camera.Camera("one.jpg")
+				c.snap_picture()
 			elif value == "2":
 	
-	        			csock.sendall("""
+	        		csock.sendall("""
 					HTTP/1.1 200 OK
 					Content-Type: text/html
 	

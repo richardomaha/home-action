@@ -9,6 +9,7 @@ import subprocess
 
 import mailer
 import led
+import camera
 
 LED = 18
 
@@ -31,6 +32,9 @@ while GPIO.input(PIR)==1:
 print "  Ready"
  
 while True:
+	
+	# TODO: add a way to read from a button to put the program in and out of a loop that puts it on hold.
+	
 
 	# Read PIR state
 	Current_State = GPIO.input(PIR)
@@ -38,8 +42,10 @@ while True:
 		print "  Motion detected!"
 		GPIO.output(LED, True)
 		led.pulsate(LED)
+		c = camera.Camera("one.jpg")
+		c.snap_picture()
 		e = mailer.Mailer(1)
-		e.test(sys.argv[1], sys.argv[2], sys.argv[3])
+		e.send_email(sys.argv[1], sys.argv[2], sys.argv[3])
 		GPIO.output(LED, False)
 
 		Previous_State=1

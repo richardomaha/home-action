@@ -13,7 +13,7 @@ class Mailer:
 	def __init__(self, x):
 		self.x = x
 		
-	def test(self, email_login, email_password, email_to):
+	def send_email(self, email_login, email_password, email_to):
 		server = smtplib.SMTP('smtp.gmail.com', 587)
 		server.ehlo()
 		server.starttls()
@@ -31,7 +31,7 @@ class Mailer:
 		body = email.mime.Text.MIMEText("""Alert - someone is at your back door.""")
 		msg.attach(body)
 
-		filename='photo.jpg'
+		filename='/var/www/one.jpg'
 		fp=open(filename,'rb')
 		att = email.mime.application.MIMEApplication(fp.read(),_subtype="jpg")
 		fp.close()
