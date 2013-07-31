@@ -7,7 +7,7 @@ def on(pin, length):
 	GPIO.output(pin, False)
 	
 def pulsate(pin):
-	for i in range(0, 50):
+	for i in range(0, 40):
 		GPIO.output(pin, True)
 		time.sleep(0.05)
 		GPIO.output(pin, False)
