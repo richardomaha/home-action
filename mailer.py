@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import smtplib
+import os
 
 # For guessing MIME type
 import mimetypes
@@ -10,8 +11,8 @@ import email
 import email.mime.application
 
 class Mailer:
-	def __init__(self, x):
-		self.x = x
+	def __init__(self):
+		self.x = "test"
 		
 	def send_email(self, email_login, email_password, email_to):
 		server = smtplib.SMTP('smtp.gmail.com', 587)
@@ -31,11 +32,15 @@ class Mailer:
 		body = email.mime.Text.MIMEText("""Alert - someone is at your back door.""")
 		msg.attach(body)
 
-		filename='/var/www/one.jpg'
-		fp=open(filename,'rb')
+		# Get the most recent photo:
+		photodir='/var/www/photos'
+		files = sorted([ f for f in os.listdir(photodir)])
+		f = files[-1]
+		
+		fp=open(photodir + "/" + f,'rb')
 		att = email.mime.application.MIMEApplication(fp.read(),_subtype="jpg")
 		fp.close()
-		att.add_header('Content-Disposition','attachment',filename=filename)
+		att.add_header('Content-Disposition','attachment',filename=f)
 		msg.attach(att)
 
 		server.sendmail(email_to,[email_to], msg.as_string())

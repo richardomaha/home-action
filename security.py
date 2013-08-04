@@ -4,6 +4,7 @@ import re
 import RPi.GPIO as GPIO
 import time
 import os
+import os.path
 import sys
 import subprocess
 
@@ -31,26 +32,27 @@ while GPIO.input(PIR)==1:
 	Current_State  = 0    
 print "  Ready"
  
+c = camera.Camera()
+m = mailer.Mailer()
+
 while True:
 	
-	# TODO: add a way to read from a button to put the program in and out of a loop that puts it on hold.
-	
-
 	# Read PIR state
 	Current_State = GPIO.input(PIR)
 	if Current_State==1 and Previous_State==0:
 		print "  Motion detected!"
 		GPIO.output(LED, True)
-		led.pulsate(LED)
-		c = camera.Camera("one.jpg")
-		c.snap_picture()
-		e = mailer.Mailer(1)
-		e.send_email(sys.argv[1], sys.argv[2], sys.argv[3])
+		time.sleep(1)
+		#led.pulsate(LED)		
+		filename = c.snap_picture()	
+		print filename
+		time.sleep(1)	
+		if os.path.exists("config/email-notification.1"):
+			print "sending email"
+			m.send_email(sys.argv[1], sys.argv[2], sys.argv[3])
 		GPIO.output(LED, False)
-
 		Previous_State=1
 	elif Current_State==0 and Previous_State==1:
-
 		print "  Ready"
 		Previous_State=0
 		
