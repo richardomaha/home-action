@@ -12,17 +12,19 @@ import mailer
 import led
 import camera
 
-LED = 18
+LED = 4
+LED2 = 25
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 GPIO.setup(LED, GPIO.OUT)
+GPIO.setup(LED2, GPIO.OUT)
 
-ledpwm = GPIO.PWM(LED, 100)
-ledpwm.start(0)
+# ledpwm = GPIO.PWM(LED, 100)
+# ledpwm.start(0)
 
 # TODO: move PIR code to class:
-PIR = 23
+PIR = 18
 GPIO.setup(PIR, GPIO.IN) 
 Current_State  = 0
 Previous_State = 0
@@ -42,15 +44,16 @@ while True:
 	if Current_State==1 and Previous_State==0:
 		print "  Motion detected!"
 		GPIO.output(LED, True)
-		time.sleep(1)
+		GPIO.output(LED2, True)
 		#led.pulsate(LED)		
 		filename = c.snap_picture()	
 		print filename
-		time.sleep(1)	
 		if os.path.exists("config/email-notification.1"):
 			print "sending email"
 			m.send_email(sys.argv[1], sys.argv[2], sys.argv[3])
 		GPIO.output(LED, False)
+		GPIO.output(LED2, False)
+		time.sleep(20)
 		Previous_State=1
 	elif Current_State==0 and Previous_State==1:
 		print "  Ready"
