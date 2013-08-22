@@ -44,14 +44,16 @@ while True:
 	if Current_State==1 and Previous_State==0:
 		print "  Motion detected!"
 		GPIO.output(LED, True)
-		GPIO.output(LED2, True)
+		#GPIO.output(LED2, True)
 		#led.pulsate(LED)		
 		filename = c.snap_picture()	
 		print filename
-		if os.path.exists("config/email-notification.1"):
+		if os.path.exists("/home/pi/python/home-action/config/email-notification.1"):
 			print "sending email"
 			m.send_email(sys.argv[1], sys.argv[2], sys.argv[3])
 		GPIO.output(LED, False)
+		GPIO.output(LED2, True)
+		time.sleep(2)
 		GPIO.output(LED2, False)
 		time.sleep(20)
 		Previous_State=1

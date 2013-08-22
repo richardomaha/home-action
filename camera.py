@@ -11,7 +11,7 @@ class Camera:
 	def snap_picture(self):
 		try:
 			filename = str(time.time())+'.jpg'
-			cmd = 'raspistill -o ' + self.photo_dir + filename + ' -q 50 -w 640 -h 480'
+			cmd = 'raspistill -t 1500 -o ' + self.photo_dir + filename + ' -q 50 -w 640 -h 480'
 			pid = subprocess.call(cmd, shell=True)
 			return self.photo_dir + filename
 		except KeyboardInterrupt:
