@@ -10,6 +10,7 @@ import subprocess
 import led
 import camera
 import mailer
+import monitor
  
 # Standard socket stuff:
 host = ''  # do we need socket.gethostname() ?
@@ -38,33 +39,26 @@ GPIO.setup(PIN2, GPIO.OUT)
  
 c = camera.Camera()
 m = mailer.Mailer()
+mon = monitor.Monitor()
 
 while True:
 	csock, caddr = sock.accept()
 	print "Connection from: " + `caddr`
 	req = csock.recv(1024)  # get the request, 1kB max
-	match = re.match('GET /operate\?key=(led|toggle-email-notification|camera|switch)&value=(\d+)\sHTTP/1.1', req)
+	match = re.match('GET /operate\?key=(camera|monitor)&value=(\d+)\sHTTP/1.1', req)
 	if match:
 		key = match.group(1)
 		value = match.group(2)
 		print "key: " + key + "\n"
 		print "value: " + value + "\n"
-		csock.sendall("""
-		HTTP/1.1 200 OK
-		Content-Type: text/html
-		<html><head><title>Success</title></head><body>Boo!</body></html>
-		""")
 		if key == "camera":
 			if value == "1":
 				filename = c.snap_picture()
 				csock.sendall(filename)
-			elif value == "2":
-				csock.sendall("HTTP/1.1 200 OK Content-Type: text/html<html><head><title>Jarvis 1.0 - Current Image</title></head><body><img src='http://72.208.62.207:4000/one.jpg'/></body></html>")
-		elif key == "toggle-email-notification":
-			cmd = 'mv config/email-notification.1 config/email-notification.0'
-			if value == "1":
-				cmd = 'mv config/email-notification.0 config/email-notification.1'
-			pid = subprocess.call(cmd, shell=True)
+		elif key == "monitor":
+			mon.cpu()
+			mon.memory()
+			csock.sendall("HTTP/1.1 200 OK Content-Type: text/xml"+mon.stats_to_xml())
     	else:
         	print "Returning 404"
 	

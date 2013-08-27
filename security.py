@@ -11,6 +11,7 @@ import subprocess
 import mailer
 import led
 import camera
+import rails_comm
 
 LED = 4
 LED2 = 25
@@ -36,20 +37,19 @@ print "  Ready"
  
 c = camera.Camera()
 m = mailer.Mailer()
+rc = rails_comm.RailsComm()
 
 while True:
 	
 	# Read PIR state
 	Current_State = GPIO.input(PIR)
 	if Current_State==1 and Previous_State==0:
-		print "  Motion detected!"
 		GPIO.output(LED, True)
-		#GPIO.output(LED2, True)
-		#led.pulsate(LED)		
 		filename = c.snap_picture()	
-		print filename
-		if os.path.exists("/home/pi/python/home-action/config/email-notification.1"):
-			print "sending email"
+
+		rc.load_device_settings()
+
+		if (rc.email_notification==1):
 			m.send_email(sys.argv[1], sys.argv[2], sys.argv[3])
 		GPIO.output(LED, False)
 		GPIO.output(LED2, True)
