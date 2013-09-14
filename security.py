@@ -39,23 +39,31 @@ c = camera.Camera()
 m = mailer.Mailer()
 rc = rails_comm.RailsComm()
 
+photo_time = 0
+
 while True:
 	
 	# Read PIR state
 	Current_State = GPIO.input(PIR)
 	if Current_State==1 and Previous_State==0:
-		GPIO.output(LED, True)
-		filename = c.snap_picture()	
+		seconds_passed = time.time() - photo_time
+		if seconds_passed >= 600:
+			photo_time = time.time()
 
-		rc.load_device_settings()
+			GPIO.output(LED, True)
+			filename = c.snap_picture()	
 
-		if (rc.email_notification==1):
-			m.send_email(sys.argv[1], sys.argv[2], sys.argv[3])
-		GPIO.output(LED, False)
-		GPIO.output(LED2, True)
-		time.sleep(2)
-		GPIO.output(LED2, False)
-		time.sleep(20)
+			rc.load_device_settings()
+			
+			if (rc.email_notification==1):
+				m.send_email(rc.email_to)
+
+			GPIO.output(LED, False)
+			GPIO.output(LED2, True)
+			time.sleep(2)
+			GPIO.output(LED2, False)
+			time.sleep(20)
+
 		Previous_State=1
 	elif Current_State==0 and Previous_State==1:
 		print "  Ready"
